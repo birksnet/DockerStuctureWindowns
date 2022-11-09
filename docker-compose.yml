@@ -1,0 +1,104 @@
+# Felipe Birk - BRT Containers
+version: "3" 
+services:
+
+    vue: 
+      image: node:lts
+      container_name: brt_dev_vue
+      tty: true
+      working_dir: /var/www
+      volumes:
+        - "./vue/:/var/www/"
+      command: >
+                  bash -c "
+                    yarn global add @vue/cli
+                    yarn add cypress --dev
+                    yarn install
+                    yarn serve
+                  "
+      ports:
+        - "8000:8080"
+
+    nginx:
+        image: nginx
+        container_name: brt_dev_nginx
+        working_dir: /var/www/public
+        ports:
+          - "8080:80"
+        links:
+          - php
+        volumes:
+          - "./nginx/config/:/etc/nginx/conf.d/"
+          - "./nginx/public:/var/www/public"
+
+    php:
+        image: php
+        container_name: brt_dev_php
+        working_dir: /var/www/
+        tty: true
+        links:
+          - mysql
+        command: >
+            bash -c "
+              apt update && apt install -y unzip && apt install git -y
+              apt install -y libsodium-dev
+              apt-get update -y && apt install -y mariadb-client
+              docker-php-ext-install sodium mysqli pdo pdo_mysql
+              curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+              cd /var/www/service && php artisan serve --host=0.0.0.0 --port=8000
+            "
+        volumes:
+          - "./php/:/var/www/"
+        ports:
+          - 8090:8000
+
+    php-7.4:
+        image: php:7.4-cli
+        container_name: brt_dev_php7
+        working_dir: /var/www/
+        tty: true
+        links:
+          - mysql
+        command: >
+            bash -c "
+              apt update && apt install -y unzip && apt install git -y
+              apt install -y libsodium-dev
+              apt-get update -y && apt install -y mariadb-client
+              docker-php-ext-install sodium mysqli pdo pdo_mysql
+              curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+              cd /var/www/service && php artisan serve --host=0.0.0.0 --port=8000
+            "
+        volumes:
+          - "./php7/:/var/www/"
+        ports:
+          - 8091:8000
+
+    jenkins:
+        image: jenkins/jenkins:lts
+        privileged: true
+        user: root 
+        container_name: brt_dev_jenkins
+        volumes:
+          - ./jenkins/jenkins_configuration:/var/jenkins_home
+          - ./jenkins/apt_config:/var/apt_config
+          - /var/run/docker.sock:/var/run/docker.sock
+          - ./vue:/var/simulados
+          - ./php:/var/simulados-api
+
+        ports:
+          - 8085:8080
+
+    mysql:
+        image: mysql
+        container_name: brt_dev_mysql
+        environment:
+          MYSQL_ROOT_PASSWORD: "Mudar123"
+          MYSQL_USER: "admin"
+          MYSQL_PASSWORD: "Mudar123"
+          MYSQL_DATABASE: "bk_manager"
+        command: --default-authentication-plugin=mysql_native_password
+        volumes:
+          - ./database/mysql:/var/lib/mysql
+          - ./database/schema:/var/schema
+        ports:
+          - 3306:3306    

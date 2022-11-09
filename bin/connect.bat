@@ -1,0 +1,1 @@
+docker exec -it brt_dev_%1 bash
