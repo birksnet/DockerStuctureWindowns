@@ -75,7 +75,8 @@ services:
           - 8091:8000
 
     portal:
-        image: php:7.4-cli
+        build:
+          dockerfile: ./dockerfile/portal/Dockerfile
         container_name: brt_dev_portal
         working_dir: /var/www/
         tty: true
