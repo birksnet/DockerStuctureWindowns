@@ -41,14 +41,15 @@ services:
         command: >
             bash -c "
               apt update && apt install -y unzip && apt install git -y
+              curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+              apt install nodejs -y && apt install npm -y
               apt install -y libsodium-dev
               apt-get update -y && apt install -y mariadb-client
               docker-php-ext-install sodium mysqli pdo pdo_mysql
-              curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
               cd /var/www/service && php artisan serve --host=0.0.0.0 --port=8000
             "
         volumes:
-          - "./php/:/var/www/"
+           - "./php/:/var/www/"
         ports:
           - 8090:8000
 
@@ -62,19 +63,35 @@ services:
         command: >
             bash -c "
               apt update && apt install -y unzip && apt install git -y
+              curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
               apt install -y libsodium-dev
               apt-get update -y && apt install -y mariadb-client
               docker-php-ext-install sodium mysqli pdo pdo_mysql
-              curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-              cd /var/www/service && php artisan serve --host=0.0.0.0 --port=8000
+              tail -f /dev/null
             "
         volumes:
           - "./php7/:/var/www/"
         ports:
           - 8091:8000
 
+    portal:
+        image: php:7.4-cli
+        container_name: brt_dev_portal
+        working_dir: /var/www/
+        tty: true
+        links:
+          - mysql
+        command: >
+            bash -c "
+              tail -f /dev/null
+            "
+        volumes:
+          - "./portal/:/var/www/"
+        ports:
+          - 8092:8000
+
 #    jenkins:
-#        image: jenkins/jenkins:lts
+#        image: brt/jenkins:0.0.3
 #        privileged: true
 #        user: root 
 #        container_name: brt_dev_jenkins
@@ -83,8 +100,8 @@ services:
 #          - ./jenkins/apt_config:/var/apt_config
 #          - /var/run/docker.sock:/var/run/docker.sock
 #          - ./vue:/var/simulados
-#          - ./php:/var/simulados-api
-
+#          - ./php:/var/php
+#
 #        ports:
 #          - 8085:8080
 
