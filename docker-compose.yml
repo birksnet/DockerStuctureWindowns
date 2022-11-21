@@ -22,8 +22,8 @@ services:
         working_dir: /var/www/public
         ports:
           - "8080:80"
-        links:
-          - php
+ #       links:
+ #         - php
         volumes:
           - "./nginx/config/:/etc/nginx/conf.d/"
           - "./nginx/public:/var/www/public"
@@ -71,8 +71,9 @@ services:
 #        ports:
 #          - 8091:8000
 
-    portal:
-        image: php:7.4-cli
+    portal:        
+        build:
+          dockerfile: ./dockerfile/portal/Dockerfile 
         container_name: brt_dev_portal
         working_dir: /var/www/
         tty: true
