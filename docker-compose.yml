@@ -2,22 +2,19 @@
 version: "3" 
 services:
 
-    vue: 
-      image: node:lts
-      container_name: brt_dev_vue
-      tty: true
-      working_dir: /var/www
-      volumes:
-        - "./vue/:/var/www/"
-      command: >
-                  bash -c "
-                    yarn global add @vue/cli
-                    yarn add cypress --dev
-                    yarn install
-                    yarn serve
-                  "
-      ports:
-        - "8000:8080"
+#    vue: 
+#      image: node:15
+#      container_name: brt_dev_vue
+#      tty: true
+#      working_dir: /var/www
+#      volumes:
+#        - "./vue/:/var/www/"
+#      command: >
+#                  bash -c "
+#                    cd /var/www/new-portal && yarn dev &
+#                  "
+#      ports:
+#        - "8000:8000"
 
     nginx:
         image: nginx
@@ -31,52 +28,51 @@ services:
           - "./nginx/config/:/etc/nginx/conf.d/"
           - "./nginx/public:/var/www/public"
 
-    php:
-        image: php
-        container_name: brt_dev_php
-        working_dir: /var/www/
-        tty: true
-        links:
-          - mysql
-        command: >
-            bash -c "
-              apt update && apt install -y unzip && apt install git -y
-              curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-              apt install nodejs -y && apt install npm -y
-              apt install -y libsodium-dev
-              apt-get update -y && apt install -y mariadb-client
-              docker-php-ext-install sodium mysqli pdo pdo_mysql
-              cd /var/www/service && php artisan serve --host=0.0.0.0 --port=8000
-            "
-        volumes:
-           - "./php/:/var/www/"
-        ports:
-          - 8090:8000
+#    php:
+#        image: php
+#        container_name: brt_dev_php
+#        working_dir: /var/www/
+#        tty: true
+#        links:
+#          - mysql
+#        command: >
+#            bash -c "
+#              apt update && apt install -y unzip && apt install git -y
+#              curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+#              apt install nodejs -y && apt install npm -y
+#              apt install -y libsodium-dev
+#              apt-get update -y && apt install -y mariadb-client
+#              docker-php-ext-install sodium mysqli pdo pdo_mysql
+#              cd /var/www/service && php artisan serve --host=0.0.0.0 --port=8000
+#            "
+#        volumes:
+#           - "./php/:/var/www/"
+#        ports:
+#          - 8090:8000
 
-    php-7.4:
-        image: php:7.4-cli
-        container_name: brt_dev_php7
-        working_dir: /var/www/
-        tty: true
-        links:
-          - mysql
-        command: >
-            bash -c "
-              apt update && apt install -y unzip && apt install git -y
-              curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-              apt install -y libsodium-dev
-              apt-get update -y && apt install -y mariadb-client
-              docker-php-ext-install sodium mysqli pdo pdo_mysql
-              tail -f /dev/null
-            "
-        volumes:
-          - "./php7/:/var/www/"
-        ports:
-          - 8091:8000
+#    php-7.4:
+#        image: php:7.4-cli
+#        container_name: brt_dev_php7
+#        working_dir: /var/www/
+#        tty: true
+#        links:
+#          - mysql
+#        command: >
+#            bash -c "
+#              apt update && apt install -y unzip && apt install git -y
+#              curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+#              apt install -y libsodium-dev
+#              apt-get update -y && apt install -y mariadb-client
+#              docker-php-ext-install sodium mysqli pdo pdo_mysql
+#              tail -f /dev/null
+#            "
+#        volumes:
+#          - "./php7/:/var/www/"
+#        ports:
+#          - 8091:8000
 
     portal:
-        build:
-          dockerfile: ./dockerfile/portal/Dockerfile
+        image: php:7.4-cli
         container_name: brt_dev_portal
         working_dir: /var/www/
         tty: true
