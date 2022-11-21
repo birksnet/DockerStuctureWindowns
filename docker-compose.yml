@@ -45,10 +45,10 @@ services:
 #              docker-php-ext-install sodium mysqli pdo pdo_mysql
 #              cd /var/www/service && php artisan serve --host=0.0.0.0 --port=8000
 #            "
-#        volumes:
-#           - "./php/:/var/www/"
-#        ports:
-#          - 8090:8000
+#         volumes:
+#          - "./php/:/var/www/"
+#         ports:
+#         - 8090:8000
 
 #    php-7.4:
 #        image: php:7.4-cli
@@ -99,7 +99,7 @@ services:
 #          - ./vue:/var/simulados
 #          - ./php:/var/php
 #
-#        ports:
+#       ports:
 #          - 8085:8080
 
     mysql:
